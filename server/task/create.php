@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             exit();
         }
 
-        header("Location: /task-manager/");
+        header("Location: /task-manager-V3/");
 
     } else {
         echo 'Nooooooooooo pasa';
