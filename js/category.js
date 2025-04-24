@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const formData = new FormData(form);
 
-        fetch('server/category/create.php', {
+        fetch('server/category/create_cat.php', {
             method: 'POST',
             body: formData
         })

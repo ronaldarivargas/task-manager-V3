@@ -109,6 +109,81 @@ document.addEventListener('DOMContentLoaded', () => {
         );
     }
 
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        const tareasContainer = document.getElementById('tareas');
+    
+        function cargarTareas() {
+            fetch('server/task/index.php')
+                .then(res => res.json())
+                .then(tareas => {
+                    tareasContainer.innerHTML = ''; // Limpiar
+    
+                    tareas.forEach(tarea => {
+                        const div = document.createElement('div');
+                        div.className = 'tarea';
+                        div.innerHTML = `
+                            <p><strong>${tarea.title}</strong></p>
+                            <p>${tarea.description}</p>
+                            <button class="btn-editar" data-id="${tarea.id}">Editar</button>
+                            <button class="btn-eliminar" data-id="${tarea.id}">Eliminar</button>
+                        `;
+                        tareasContainer.appendChild(div);
+                    });
+                });
+        }
+    
+        // Cargar tareas al iniciar
+        cargarTareas();
+    
+        // Delegar eventos a los botones
+        document.addEventListener('click', (e) => {
+            const id = e.target.dataset.id;
+    
+            //  EDITAR
+            if (e.target.classList.contains('btn-editar')) {
+                const nuevoTitulo = prompt("Nuevo título:");
+                const nuevaDescripcion = prompt("Nueva descripción:");
+    
+                if (nuevoTitulo && nuevaDescripcion) {
+                    fetch('server/task/edit.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            id: id,
+                            title: nuevoTitulo,
+                            description: nuevaDescripcion,
+                            completed: false // o true según tu lógica
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        alert(data.message);
+                        cargarTareas(); // recargar tareas
+                    });
+                }
+            }
+    
+            //  ELIMINAR
+            if (e.target.classList.contains('btn-eliminar')) {
+                if (confirm("¿Estás seguro de eliminar esta tarea?")) {
+                    fetch('server/task/delete.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: id })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        alert(data.message);
+                        cargarTareas(); // recargar tareas
+                    });
+                }
+            }
+        });
+    });
+    
+
+
     window.deleteTask = function (id) {
         tasks = tasks.filter(task => task.id !== id);
         renderTasks();
